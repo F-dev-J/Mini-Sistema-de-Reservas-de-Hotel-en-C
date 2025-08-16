@@ -13,7 +13,18 @@ void agregarModificarHotel(struct Habitacion hotel[FILAS][COLUMNAS], FILE *archD
 main(){	
 FILE *archDisp; 
  struct Habitacion hotel[FILAS][COLUMNAS];
+ int opcion;
+ bool band1=true;
+ do{
+ printf("ingrese una opcion:\n");
+  printf("1)crecion/reseteo de los pisos x habitaciones:\n");
+  printf("2)agregar o modificar habitacion:\n");
+  printf("3)ver habitaciones disponibles:\n");
+  printf("4)salir:");
+ scanf("%d",&opcion);   
+ switch(opcion){
 //----------------------------------------------------- 
+	case 1:
  archDisp=fopen("disponibilidad.dat","wb");
     if (archDisp == NULL) {
     printf("Error al abrir el archivo\n");
@@ -21,15 +32,19 @@ FILE *archDisp;
     }
  cargarHotel(hotel,archDisp);
 fclose(archDisp);
+break;
 //----------------------------------------------------- 
-//  archDisp=fopen("disponibilidad.dat","rb+");
-//    if (archDisp == NULL) {
-//    printf("Error al abrir el archivo\n");
-//    return 1;
-//    }
-//    agregarModificarHotel(hotel,archDisp,0,1);
-// fclose(archDisp);
+case 2:
+  archDisp=fopen("disponibilidad.dat","rb+");
+    if (archDisp == NULL) {
+    printf("Error al abrir el archivo\n");
+    return 1;
+    }
+    agregarModificarHotel(hotel,archDisp,0,1);
+ fclose(archDisp);
+ break;
  //-----------------------------------------------------
+ case 3:
   archDisp=fopen("disponibilidad.dat","rb");
     if (archDisp == NULL) {
     printf("Error al abrir el archivo\n");
@@ -37,8 +52,17 @@ fclose(archDisp);
     }
  mostrarHotel(hotel,archDisp);
  fclose(archDisp);
- 
-return 0;	
+ break;
+ case 4:
+ printf("Muchas gracias");
+ band1=false;
+ break;
+ default:
+ 	printf("seleccione una opcion dentro del rango");
+  }	
+ }
+ while(band1!=false);
+ return 0;	
 }
 void cargarHotel(struct Habitacion hotel[FILAS][COLUMNAS],FILE *archDisp) {
     for (int i = 0; i < FILAS; i++) {
