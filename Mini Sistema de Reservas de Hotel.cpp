@@ -1,11 +1,13 @@
 #include<stdio.h>
 #include<conio.h>
+#include<stdlib.h>
 #define FILAS 10
 #define COLUMNAS 3
 struct Habitacion {
     int numero;
     int ocupada; // 0 = libre, 1 = ocupada
 };
+void buscarHabitacion(struct Habitacion hotel[FILAS][COLUMNAS],FILE *archDisp, int Nhabitacion, int* c2Piso,int* c2Hab);
 void cargarHotel(struct Habitacion hotel[FILAS][COLUMNAS],FILE *archDisp);
 void mostrarHotel(struct Habitacion hotel[FILAS][COLUMNAS],FILE *archDisp);
 void agregarModificarHotel(struct Habitacion hotel[FILAS][COLUMNAS], FILE *archDisp, int fila, int columna);
@@ -13,7 +15,7 @@ void agregarModificarHotel(struct Habitacion hotel[FILAS][COLUMNAS], FILE *archD
 main(){	
 FILE *archDisp; 
  struct Habitacion hotel[FILAS][COLUMNAS];
- int opcion;
+ int opcion,Nhabitacion,c2Piso,c2Hab;
  bool band1=true;
  do{
  printf("ingrese una opcion:\n");
@@ -35,12 +37,15 @@ fclose(archDisp);
 break;
 //----------------------------------------------------- 
 case 2:
-  archDisp=fopen("disponibilidad.dat","rb+");
+	printf("ingrese el numero de la habitacion:");
+	scanf("%d",&Nhabitacion);
+    archDisp=fopen("disponibilidad.dat","rb+");
     if (archDisp == NULL) {
     printf("Error al abrir el archivo\n");
     return 1;
     }
-    agregarModificarHotel(hotel,archDisp,0,1);
+    buscarHabitacion(hotel,archDisp,Nhabitacion,&c2Piso,&c2Hab);
+    agregarModificarHotel(hotel,archDisp,c2Piso,c2Hab);
  fclose(archDisp);
  break;
  //-----------------------------------------------------
@@ -58,12 +63,17 @@ case 2:
  band1=false;
  break;
  default:
- 	printf("seleccione una opcion dentro del rango");
+ 	system("cls");
+ 	printf("seleccione una opcion dentro del rango\n");
+ 	getch();
+ 	system("cls");
   }	
  }
  while(band1!=false);
  return 0;	
 }
+
+//funciones de carga,lectura y de modificacion
 void cargarHotel(struct Habitacion hotel[FILAS][COLUMNAS],FILE *archDisp) {
     for (int i = 0; i < FILAS; i++) {
         for (int j = 0; j < COLUMNAS; j++) {
@@ -72,7 +82,6 @@ void cargarHotel(struct Habitacion hotel[FILAS][COLUMNAS],FILE *archDisp) {
             fwrite(&hotel[i][j],sizeof(struct Habitacion),1,archDisp);
         }
     }
-    fclose(archDisp);
 }
 void mostrarHotel(struct Habitacion hotel[FILAS][COLUMNAS], FILE *archDisp) {
     printf("\n--- Estado del Hotel ---\n");
@@ -83,7 +92,6 @@ void mostrarHotel(struct Habitacion hotel[FILAS][COLUMNAS], FILE *archDisp) {
         }
         printf("\n");
     }
-   fclose(archDisp);
 }
 void agregarModificarHotel(struct Habitacion hotel[FILAS][COLUMNAS],FILE *archDisp, int fila, int columna) {
    
@@ -94,7 +102,18 @@ void agregarModificarHotel(struct Habitacion hotel[FILAS][COLUMNAS],FILE *archDi
               hotel[fila][columna].ocupada = 1; // marcar como ocupada
             fwrite(&hotel[fila][columna], sizeof(struct Habitacion), 1, archDisp);
         }
-    }
-   
-   
+    }  
+}
+//--------------------------------------------------------------------------
+void buscarHabitacion(struct Habitacion hotel[FILAS][COLUMNAS],FILE *archDisp, int Nhabitacion, int* c2Piso,int* c2Hab){
+    for (int i = 0; i < FILAS; i++) {
+        for (int j = 0; j < COLUMNAS; j++) {
+        	fread(&hotel[i][j], sizeof(struct Habitacion), 1, archDisp);
+            hotel[i][j].numero = i * COLUMNAS + j + 1;
+            if( hotel[i][j].numero == Nhabitacion){
+            	*c2Piso=i;
+            	*c2Hab=j;
+			}
+        }
+    }	
 }
